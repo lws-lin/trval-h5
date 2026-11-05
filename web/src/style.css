@@ -1,0 +1,48 @@
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue',
+    sans-serif;
+  background: #f7f8fa;
+  color: #323233;
+}
+
+#app {
+  width: 100%;
+}
+
+.layout {
+  min-height: 100%;
+  background: #fff;
+}
+
+.layout-main {
+  min-height: calc(100% - 46px - 50px);
+}
+
+.layout--sub .layout-main {
+  min-height: calc(100% - 46px);
+}
+
+.page {
+  padding: 24px 16px;
+}
+
+.page h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.page p {
+  margin: 8px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #969799;
+}
