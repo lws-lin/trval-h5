@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.trval.common.ApiException;
 import com.trval.llm.DeepSeekClient;
+import com.trval.llm.PromptDocument;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -12,22 +13,14 @@ import java.util.List;
 @Service
 public class PlanService {
 
-    private static final String SYSTEM_PROMPT = """
-            你是旅行规划助手。根据用户给出的出发地、目的地、预算和天数，生成一份可以执行的行程。
-            只返回 JSON，不要使用 Markdown，不要附加解释。
-            JSON 结构如下：
-            {"summary":"80字以内的行程概要","schedule":[{"day":1,"title":"12字以内的当天主题","content":"当天的交通、活动和用餐安排，120字以内"}]}
-            schedule 的条数必须等于要求的天数，day 从 1 开始连续递增。
-            天数大于 1 时，最后一天安排返程。
-            预算要体现在交通、住宿或活动的取舍上。如果提供了其他需求，行程里要体现。使用中文。
-            """;
-
     private final DeepSeekClient deepSeekClient;
     private final ObjectMapper objectMapper;
+    private final PromptDocument promptDocument;
 
-    public PlanService(DeepSeekClient deepSeekClient, ObjectMapper objectMapper) {
+    public PlanService(DeepSeekClient deepSeekClient, ObjectMapper objectMapper, PromptDocument promptDocument) {
         this.deepSeekClient = deepSeekClient;
         this.objectMapper = objectMapper;
+        this.promptDocument = promptDocument;
     }
 
     public PlanResult create(PlanRequest request, String apiKey, String model) {
@@ -45,7 +38,7 @@ public class PlanService {
                 天数：%d
                 其他需求：%s
                 """.formatted(request.departText(), request.destText(), budget, count, extra);
-        String content = deepSeekClient.complete(apiKey, model, SYSTEM_PROMPT, userPrompt);
+        String content = deepSeekClient.complete(apiKey, model, promptDocument.planPrompt(), userPrompt);
         return toResult(request, content);
     }
 
